@@ -1,0 +1,15 @@
+1. Inisialisasi Sistem: Menyiapkan variabel utama, mengeset sumBelanja = 0, dan mengosongkan array daftar barang serta keranjang. 
+2. Menampilkan Menu Utama: Menampilkan 4 pilihan akses (1. Admin, 2. Belanja, 3. Kasir, 4. Cetak Struk) dan membaca pilihan pengguna. 
+3. Pengecekan Akses Admin (Menu 1): Mengarahkan pengguna ke sub-menu admin untuk memilih tindakan: tambah barang, hapus barang, atau lihat daftar barang. 
+4. Eksekusi Manajemen Barang:
+Jika tambah barang: memperbesar ukuran array dan menyimpan data nama serta harga baru.
+Jika hapus barang: mengurangi ukuran array barang terakhir (jika ada).
+Jika lihat barang: menampilkan seluruh isi array barang.
+5. Pemeriksaan Stok Toko (Menu 2): Mengecek apakah daftar barang toko sudah terisi oleh admin sebelum proses belanja dimulai. 
+6. Pemilihan Barang ke Keranjang: Membaca nomor barang yang dipilih pembeli, memvalidasi nomor tersebut, lalu menyalin data barang dan harganya ke dalam array keranjang. 
+7. Akumulasi Total Belanja: Menjumlahkan harga barang yang baru dibeli ke dalam variabel sumBelanja secara berulang (looping) hingga pembeli selesai memilih barang. 
+8. Kalkulasi Potongan Diskon (Menu 3): Menampilkan total belanjaan, mengecek input diskon tambahan (persentase), lalu menghitung besarnya potongan harga dan total pembayaran akhir. 
+9. Validasi Kecukupan Uang Pembayaran: Membaca nominal uang dari pembeli. Jika kurang, sistem menampilkan seseimbangan kekurangan dan meminta input uang ulang secara terus-menerus (repeat-until) sampai cukup. 
+10. Perhitungan Uang Kembalian: Mengurangi uang bayar dengan total belanja akhir untuk mendapatkan jumlah kembalian, lalu mengubah status transaksi menjadi LUNAS. 
+11. Pencetakan Struk ke Layar & File Teks (Menu 4): Menampilkan daftar rincian barang belanjaan di layar konsol dan mengekspor (write) nota transaksi tersebut ke dalam berkas struk.txt menggunakan fitur File Handling. 
+12. Reset Keranjang dan Konfirmasi Pengulangan: Mengosongkan kembali array keranjang ke ukuran 0 untuk transaksi baru, lalu menanyakan apakah pengguna ingin mengulang ke menu utama atau keluar dari program.
