@@ -1,0 +1,194 @@
+PROGRAM KasirLengkap
+
+DEKLARASI:
+    opsi, admOpsi : INTEGER
+    hargaBaru, pilihBarang, index, i : INTEGER
+    diskonPersen, totDiskon, totalAkhir : INTEGER
+    uangBayar, kembalian, sumBelanja : INTEGER
+    barangBaru : STRING
+    next, belanjaLagi, adaDiskon : CHAR
+    
+    daftar_harga : ARRAY DYNAMIC OF INTEGER
+    daftar_barang : ARRAY DYNAMIC OF STRING
+    keranjang_nama : ARRAY DYNAMIC OF STRING
+    keranjang_harga : ARRAY DYNAMIC OF INTEGER
+    fileStruk : FILE OF TEXT
+
+ALGORITMA:
+    sumBelanja <- 0
+
+    REPEAT
+        BERSIHKAN_LAYAR()
+        OUTPUT "====Sistem Kasir===="
+        OUTPUT "=Apa yang kamu mau?="
+        OUTPUT "1. Memanage barang(Admin)"
+        OUTPUT "2. Berbelanja"
+        OUTPUT "3. Mode kasir"
+        OUTPUT "4. Cetak Struk"
+        OUTPUT "Pilih manaa(1/2/3/4) : "
+        INPUT opsi
+
+        SWITCH opsi
+            CASE 1:
+                OUTPUT "Pilih opsi manage :"
+                OUTPUT "1. Menambah barang"
+                OUTPUT "2. Menghapus barang"
+                OUTPUT "3. Melihat saja"
+                OUTPUT "Pilihan: "
+                INPUT admOpsi
+
+                IF admOpsi = 1 THEN
+                    OUTPUT "Masukkan harga barang baru: Rp "
+                    INPUT hargaBaru
+                    OUTPUT "Masukkan nama barang baru : "
+                    INPUT barangBaru
+
+                    TAMBAH_UKURAN(daftar_harga)
+                    TAMBAH_UKURAN(daftar_barang)
+                    daftar_harga[INDEKS_TERAKHIR] <- hargaBaru
+                    daftar_barang[INDEKS_TERAKHIR] <- barangBaru
+
+                    OUTPUT "Barang '", barangBaru, "' dengan harga Rp", hargaBaru, " berhasil ditambahkan!"
+
+                ELSE IF admOpsi = 2 THEN
+                    IF PANJANG(daftar_harga) > 0 THEN
+                        KURANGI_UKURAN(daftar_harga)
+                        KURANGI_UKURAN(daftar_barang)
+                        OUTPUT "Barang terakhir berhasil dihapus."
+                    ELSE
+                        OUTPUT "Daftar barang masih kosong!"
+                    ENDIF
+
+                ELSE IF admOpsi = 3 THEN
+                    OUTPUT "--- DAFTAR BARANG ---"
+                    IF PANJANG(daftar_harga) = 0 THEN
+                        OUTPUT "Belum ada barang yang tersimpan!"
+                    ELSE
+                        FOR i <- 0 TO PANJANG(daftar_harga) - 1 DO
+                            OUTPUT "[ ", daftar_barang[i], ", Harga : Rp", daftar_harga[i], " ]"
+                        ENDFOR
+                    ENDIF
+                ENDIF
+
+            CASE 2:
+                OUTPUT "===Menu Belanja==="
+                IF PANJANG(daftar_harga) = 0 THEN
+                    OUTPUT "Barang masih kosong, admin belum menambahkan barang!"
+                ELSE
+                    REPEAT
+                        OUTPUT "Daftar barang di toko:"
+                        FOR i <- 0 TO PANJANG(daftar_harga) - 1 DO
+                            OUTPUT (i + 1), ". ", daftar_barang[i], " - Rp", daftar_harga[i]
+                        ENDFOR
+
+                        OUTPUT "Pilih nomor barang : "
+                        INPUT pilihBarang
+
+                        IF (pilihBarang > 0) AND (pilihBarang <= PANJANG(daftar_harga)) THEN
+                            index <- pilihBarang - 1
+
+                            TAMBAH_UKURAN(keranjang_nama)
+                            TAMBAH_UKURAN(keranjang_harga)
+
+                            keranjang_nama[INDEKS_TERAKHIR] <- daftar_barang[index]
+                            keranjang_harga[INDEKS_TERAKHIR] <- daftar_harga[index]
+                            sumBelanja <- sumBelanja + daftar_harga[index]
+
+                            OUTPUT "-> ", daftar_barang[index], " Berhasil Masuk keranjang !"
+                        ELSE
+                            OUTPUT "Nomor barang tidak valid !"
+                        ENDIF
+
+                        OUTPUT "Mau beli barang lagi ? (y/n): "
+                        INPUT belanjaLagi
+                        belanjaLagi <- HURUF_KECIL(belanjaLagi)
+
+                    UNTIL belanjaLagi != 'y'
+                ENDIF
+
+            CASE 3:
+                OUTPUT "=====Mode Kasir====="
+                IF PANJANG(keranjang_nama) = 0 THEN
+                    OUTPUT "Keranjang masih kosong!, silakan berbelanja !"
+                ELSE
+                    OUTPUT "Total Belanjaan : Rp ", sumBelanja
+                    diskonPersen <- 0
+                    totalAkhir <- sumBelanja
+
+                    OUTPUT "Apakah ada diskon tambahan? (y/n): "
+                    INPUT adaDiskon
+
+                    IF HURUF_KECIL(adaDiskon) = 'y' THEN
+                        OUTPUT "Masukkan persen diskon (misal 10% menjadi 10): "
+                        INPUT diskonPersen
+                        totDiskon <- (sumBelanja * diskonPersen) DIV 100
+                        totalAkhir <- sumBelanja - totDiskon
+                        OUTPUT "-> Potongan Diskon : Rp", totDiskon
+                    ENDIF
+
+                    OUTPUT "--------------------------------------------------"
+                    OUTPUT "==Total yang harus di bayar adalah : Rp", totalAkhir
+                    OUTPUT "--------------------------------------------------"
+
+                    REPEAT
+                        OUTPUT "Masukkan nominal uang bayar : Rp "
+                        INPUT uangBayar
+
+                        IF uangBayar < totalAkhir THEN
+                            OUTPUT "Uang kurang !, kurang Rp ", (totalAkhir - uangBayar), ". Silakan masukkan nominal yang pas/lebih."
+                        ENDIF
+                    UNTIL uangBayar >= totalAkhir
+
+                    kembalian <- uangBayar - totalAkhir
+                    OUTPUT "Kembalian : Rp ", kembalian
+                    OUTPUT "[ TRANSAKSI LUNAS ]"
+                ENDIF
+
+            CASE 4:
+                OUTPUT "================================"
+                OUTPUT "===========Cetak Struk=========="
+                OUTPUT "================================"
+
+                IF PANJANG(keranjang_harga) = 0 THEN
+                    OUTPUT "Belum adaa transaksi/keranjang kosong !"
+                ELSE
+                    FOR i <- 0 TO PANJANG(keranjang_nama) - 1 DO
+                        OUTPUT (i + 1), ". ", keranjang_nama[i], " : Rp", keranjang_harga[i]
+                    ENDFOR
+                    OUTPUT "---------------------------------"
+                    OUTPUT "TOTAL BELANJA : Rp", sumBelanja
+                    OUTPUT "================================="
+                    OUTPUT " Terima kasih telah berbelanja! "
+
+                    BUKA_FILE_UNTUK_DITULIS(fileStruk, "struk.txt")
+                    
+                    IF FILE_BERHASIL_DIBUKA THEN
+                        TULIS_KE_FILE(fileStruk, "=================================")
+                        TULIS_KE_FILE(fileStruk, "          STRUK BELANJA          ")
+                        TULIS_KE_FILE(fileStruk, "=================================")
+                        FOR i <- 0 TO PANJANG(keranjang_nama) - 1 DO
+                            TULIS_KE_FILE(fileStruk, (i + 1), ". ", keranjang_nama[i], " : Rp", keranjang_harga[i])
+                        ENDFOR
+                        TULIS_KE_FILE(fileStruk, "---------------------------------")
+                        TULIS_KE_FILE(fileStruk, "TOTAL BELANJA : Rp", sumBelanja)
+                        TULIS_KE_FILE(fileStruk, "=================================")
+                        TULIS_KE_FILE(fileStruk, " Terima kasih telah berbelanja! ")
+                        TUTUP_FILE(fileStruk)
+                        OUTPUT "-> Struk berhasil disimpan ke 'struk.txt'!"
+                    ELSE
+                        OUTPUT "-> Gagal menyimpan file struk.txt!"
+                    ENDIF
+
+                    KOSONGKAN_ARRAY(keranjang_nama)
+                    KOSONGKAN_ARRAY(keranjang_harga)
+                    sumBelanja <- 0
+                    OUTPUT "(Sistem: Keranjang telah dikosongkan untuk transaksi baru)"
+                ENDIF
+        ENDSWITCH
+
+        OUTPUT "Apakah kamu mau melanjutkan kegiatan ?(y/n): "
+        INPUT next
+        next <- HURUF_KECIL(next)
+
+    UNTIL next != 'y'
+ENDPROGRAM
